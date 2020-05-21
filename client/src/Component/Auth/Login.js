@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { toast } from "react-toastify";
 import { Link, Redirect } from "react-router-dom";
 
@@ -12,6 +12,7 @@ const Login = () => {
     container: {
       minHeight: "90vh",
     },
+    width: { width: "30%" },
   };
 
   return (
@@ -30,7 +31,7 @@ const Login = () => {
         className="d-flex pt-5 justify-content-center align-items-center"
         style={styles.container}
       >
-        <div className="card p-4" style={{ width: "30%" }}>
+        <div className="card p-4" style={styles.width}>
           <div className="card-body">
             <h1>Login</h1>
             <p className="text-muted">Sign In to your account</p>

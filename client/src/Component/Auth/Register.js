@@ -16,14 +16,15 @@ const Register = () => {
 
   return (
     <div>
-      {globalState.state.authError
-        ? toast.error(globalState.state.authErrors.message, {
-            position: toast.POSITION.TOP_RIGHT,
-          })
-        : toast.success("Sign up Ok", {
-            position: toast.POSITION.TOP_RIGHT,
-          })}
+      {globalState.state.authError &&
+        toast.error(globalState.state.authErrors.message, {
+          position: toast.POSITION.TOP_RIGHT,
+        })}
 
+      {globalState.state.authSuccessful &&
+        toast.success("Sign up Ok", {
+          position: toast.POSITION.TOP_RIGHT,
+        })}
       {globalState.state.authSuccessful ? <Redirect exact to="/home" /> : null}
 
       <div

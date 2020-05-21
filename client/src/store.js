@@ -14,6 +14,7 @@ const initialState = {
   authErrors: {},
   authError: false,
   authSuccessful: false,
+  markets: [],
 };
 
 const store = createContext(initialState);
@@ -56,6 +57,7 @@ const StateProvider = ({ component }) => {
         handleSignup,
         onChangeInput,
         getUserProfile,
+        getMarkets,
       }}
     >
       {component}
@@ -170,6 +172,26 @@ const StateProvider = ({ component }) => {
         type: "change",
         payload: response.data.data.user,
         field: "user",
+      });
+    }
+  }
+
+  async function getMarkets() {
+    const bearerToken = localStorage.getItem("token");
+    const [error, response] = await to(
+      axios.get(`${process.env.REACT_APP_API_URL}/markets`, {
+        headers: {
+          Authorization: bearerToken,
+        },
+      })
+    );
+
+    if (error) dispatch({ type: "hide loader" });
+    else {
+      dispatch({
+        type: "change",
+        payload: response.data.data.markets,
+        field: "markets",
       });
     }
   }
