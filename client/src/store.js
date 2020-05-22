@@ -132,7 +132,7 @@ const StateProvider = ({ component }) => {
       axios.post(`${process.env.REACT_APP_API_URL}/users/login`, {
         email,
         password,
-      }),
+      })
     );
 
     if (error) {
@@ -181,7 +181,7 @@ const StateProvider = ({ component }) => {
         firstName,
         lastName,
         confirmPassword,
-      }),
+      })
     );
 
     if (error) {
@@ -228,7 +228,7 @@ const StateProvider = ({ component }) => {
         headers: {
           Authorization: bearerToken,
         },
-      }),
+      })
     );
 
     if (error) dispatch({ type: "hide loader" });
@@ -248,7 +248,7 @@ const StateProvider = ({ component }) => {
         headers: {
           Authorization: bearerToken,
         },
-      }),
+      })
     );
 
     if (error) dispatch({ type: "hide loader" });
@@ -268,7 +268,7 @@ const StateProvider = ({ component }) => {
         headers: {
           Authorization: bearerToken,
         },
-      }),
+      })
     );
     if (error) {
       dispatch({
@@ -322,18 +322,22 @@ const StateProvider = ({ component }) => {
     console.log(data, file);
 
     const [error, response] = await to(
-      axios.patch(`${process.env.REACT_APP_API_URL}/markets`, {
-        name,
-        category,
-        description,
-        address,
-        marketPictures,
-      }, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: bearerToken,
+      axios.patch(
+        `${process.env.REACT_APP_API_URL}/markets`,
+        {
+          name,
+          category,
+          description,
+          address,
+          marketPictures,
         },
-      }),
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: bearerToken,
+          },
+        }
+      )
     );
     if (error) {
       dispatch({
@@ -397,8 +401,8 @@ const StateProvider = ({ component }) => {
           headers: {
             Authorization: bearerToken,
           },
-        },
-      ),
+        }
+      )
     );
 
     if (error) {
@@ -414,7 +418,7 @@ const StateProvider = ({ component }) => {
       });
     } else {
       const newMarkets = markets.filter(
-        (market) => market.id !== marketToDelete,
+        (market) => market.id !== marketToDelete
       );
 
       dispatch({
@@ -465,10 +469,11 @@ const StateProvider = ({ component }) => {
     const { name, category, userLocation } = state;
     const [error, response] = await to(
       axios.get(
-        `${process.env.REACT_APP_API_URL}/search?name=${name}&category=${category}&latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`,
-      ),
+        `${process.env.REACT_APP_API_URL}/search?name=${name}&category=${category}&latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`
+      )
     );
 
+    console.log(response.data);
     if (error || !response.data) {
       dispatch({
         type: "change",
@@ -476,6 +481,11 @@ const StateProvider = ({ component }) => {
         field: "isMarketFound",
       });
     } else {
+      dispatch({
+        type: "change",
+        payload: false,
+        field: "searchLocation",
+      });
       dispatch({
         type: "change",
         payload: response.data.data.markets,

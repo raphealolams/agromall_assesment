@@ -24,21 +24,21 @@ const Search = () => {
   }, []);
 
   const askForLocation = (e) => {
-    console.log(e);
     const geo = navigator.geolocation;
     if (!geo) {
-      dispatch(
-        {
-          type: "change",
-          payload: "Geolocation is not supported",
-          field: "locationError",
-        },
-      );
+      dispatch({
+        type: "change",
+        payload: "Geolocation is not supported",
+        field: "locationError",
+      });
     }
     navigator.geolocation.getCurrentPosition(locationAllowed, locationError);
   };
 
   console.log(searchLocation);
+
+  console.log({ markets });
+
   return (
     <div>
       {searchLocation && searchMarket()}
@@ -73,11 +73,7 @@ const Search = () => {
         </div>
       </div>
       <div className="container pt-5">
-        {markets &&
-          <Card
-            cardData={markets}
-            showEditDeleteButton={false}
-          />}
+        {markets && <Card cardData={markets} showEditDeleteButton={false} />}
       </div>
     </div>
   );

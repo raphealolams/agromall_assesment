@@ -336,11 +336,14 @@ const marketController = (options) => {
         longitude: query.longitude,
       });
 
+      const sortedMarkets = locations.map((location) => location.coord);
       return responseHandler.success(
         res,
         {
           message: "markets found",
-          markets: locations,
+          response: {
+            markets: sortedMarkets,
+          },
         },
         httpStatus.OK
       );
