@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Image from "../Image/Image";
 import Button from "../Button/Button";
 
-const Card = ({ cardData }) => {
+const Card = ({ cardData, onClick }) => {
   return (
     <div className="row row-cols-1 row-cols-md-3">
       {cardData.map((data) => {
@@ -21,10 +21,10 @@ const Card = ({ cardData }) => {
 
               <div className="card-body">
                 <p className="card-title text-muted">
-                  <b>Name: {data.name}</b>
+                  <b>Name:</b> {data.name}
                 </p>
                 <p className="card-text text-muted">
-                  <b>Description: {data.description}</b>
+                  <b>Description:</b> {data.description.slice(0, 100)}
                 </p>
               </div>
               <div className="card-footer">
@@ -43,6 +43,7 @@ const Card = ({ cardData }) => {
                 <Button
                   buttonClassName="btn btn-outline-danger m-2"
                   buttonTitle="Delete"
+                  onClick={() => onClick(data.id)}
                 />
               </div>
             </div>

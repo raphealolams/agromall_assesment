@@ -1,7 +1,11 @@
 import React from "react";
 
-const Button = ({ buttonClassName, buttonTitle }) => {
-  return <button className={buttonClassName}>{buttonTitle}</button>;
+const Button = ({ buttonClassName, buttonTitle, onClick }) => {
+  return (
+    <button className={buttonClassName} onClick={onClick}>
+      {buttonTitle}
+    </button>
+  );
 };
 
 export default Button;

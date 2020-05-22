@@ -15,6 +15,9 @@ const initialState = {
   authError: false,
   authSuccessful: false,
   markets: [],
+  market: {},
+  isMarketDeleted: false,
+  isMarketDeletedError: false,
 };
 
 const store = createContext(initialState);
@@ -58,6 +61,8 @@ const StateProvider = ({ component }) => {
         onChangeInput,
         getUserProfile,
         getMarkets,
+        getMarket,
+        handleDelete,
       }}
     >
       {component}
@@ -107,6 +112,11 @@ const StateProvider = ({ component }) => {
         payload: true,
         field: "authSuccessful",
       });
+      dispatch({
+        type: "clear error",
+        payload: false,
+        field: "authSuccessful",
+      });
       localStorage.setItem("token", response.data.data.bearerToken);
     }
   }
@@ -151,6 +161,11 @@ const StateProvider = ({ component }) => {
         payload: true,
         field: "authSuccessful",
       });
+      dispatch({
+        type: "clear error",
+        payload: false,
+        field: "authSuccessful",
+      });
       localStorage.setItem("token", response.data.data.bearerToken);
     }
   }
@@ -191,6 +206,93 @@ const StateProvider = ({ component }) => {
       dispatch({
         type: "change",
         payload: response.data.data.markets,
+        field: "markets",
+      });
+    }
+  }
+
+  async function getMarket(id) {
+    const bearerToken = localStorage.getItem("token");
+    const [error, response] = await to(
+      axios.get(`${process.env.REACT_APP_API_URL}/markets/${id}`, {
+        headers: {
+          Authorization: bearerToken,
+        },
+      })
+    );
+    if (error) {
+      dispatch({
+        type: "change",
+        payload: true,
+        field: "isMarketDeletedError",
+      });
+      dispatch({
+        type: "clear error",
+        payload: false,
+        field: "isMarketDeletedError",
+      });
+    } else {
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+    }
+  }
+
+  async function handleDelete(id) {
+    const bearerToken = localStorage.getItem("token");
+    const { market, markets } = state;
+    const marketToDelete = Object.keys(market).length > 0 ? market.id : id;
+
+    const [error, response] = await to(
+      axios.delete(
+        `${process.env.REACT_APP_API_URL}/markets/${marketToDelete}`,
+        {
+          headers: {
+            Authorization: bearerToken,
+          },
+        }
+      )
+    );
+
+    if (error) {
+      dispatch({
+        type: "change",
+        payload: true,
+        field: "isMarketDeletedError",
+      });
+      dispatch({
+        type: "clear error",
+        payload: false,
+        field: "isMarketDeletedError",
+      });
+    } else {
+      const newMarkets = markets.filter(
+        (market) => market.id !== marketToDelete
+      );
+
+      dispatch({
+        type: "change",
+        payload: true,
+        field: "isMarketDeleted",
+      });
+
+      dispatch({
+        type: "change",
+        payload: false,
+        field: "isMarketDeleted",
+      });
+
+      dispatch({
+        type: "change",
+        payload: {},
+        field: "market",
+      });
+
+      dispatch({
+        type: "change",
+        payload: newMarkets,
         field: "markets",
       });
     }
