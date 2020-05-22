@@ -19,11 +19,13 @@ const ViewMarket = () => {
   const {
     getMarket,
     handleDelete,
-    state: { market, isMarketDeletedError, isMarketDeleted },
+    checkIsAdmin,
+    state: { market, isMarketDeletedError, isMarketDeleted, showEditDeleteButton },
   } = globalState;
 
   useEffect(() => {
     getMarket(id);
+    checkIsAdmin();
   }, []);
 
   const deleteDialog = (e) => {
@@ -81,17 +83,18 @@ const ViewMarket = () => {
                       </p>
                     </div>
                     <div className="card-footer">
-                      <Link to={`/edit/${market.id}`}>
-                        <Button
-                          buttonClassName="btn btn-outline-primary m-2"
-                          buttonTitle="Edit"
-                        />
-                      </Link>
-                      <Button
+                      {showEditDeleteButton &&
+                        <Link to={`/edit/${market.id}`}>
+                          <Button
+                            buttonClassName="btn btn-outline-primary m-2"
+                            buttonTitle="Edit"
+                          />
+                        </Link>}
+                      {showEditDeleteButton && <Button
                         buttonClassName="btn btn-outline-danger m-2"
                         buttonTitle="Delete"
                         onClick={deleteDialog}
-                      />
+                      />}
                     </div>
                   </div>
                 </div>
@@ -100,11 +103,10 @@ const ViewMarket = () => {
                 <div className="embed-responsive embed-responsive-16by9">
                   <iframe
                     className="embed-responsive-item"
-                    src={
-                      market.coordinate &&
-                      `${process.env.REACT_APP_API_GOOGLE_URL}?key=${process.env.REACT_APP_API_GOOGLE_KEY}&q=${market.coordinate.latitude},${market.coordinate.longitude}`
-                    }
-                  ></iframe>
+                    src={market.coordinate &&
+                      `${process.env.REACT_APP_API_GOOGLE_URL}?key=${process.env.REACT_APP_API_GOOGLE_KEY}&q=${market.coordinate.latitude},${market.coordinate.longitude}`}
+                  >
+                  </iframe>
                 </div>
               </div>
             </div>

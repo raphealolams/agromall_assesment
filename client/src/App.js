@@ -18,6 +18,8 @@ import AuthenticatedRoute from "./Component/AuthenticatedRoute";
 import ViewMarket from "./Component/Market/ViewMarket";
 import EditMarket from "./Component/Market/EditMarket";
 
+import Search from "./Component/Search/Search";
+
 function App() {
   return (
     <Fragment>
@@ -27,10 +29,20 @@ function App() {
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
 
+        <Route exact path="/home" component={Search} />
+        <Route exact path="/view/:id" component={ViewMarket} />;
         <Switch>
-          <AuthenticatedRoute component={DashBoard} exact path="/home" />
-          <AuthenticatedRoute component={ViewMarket} exact path="/view/:id" />
-          <AuthenticatedRoute component={EditMarket} exact path="/edit/:id" />
+          <AuthenticatedRoute component={DashBoard} exact path="/admin/home" />
+          <AuthenticatedRoute
+            component={ViewMarket}
+            exact
+            path="/admin/view/:id"
+          />
+          <AuthenticatedRoute
+            component={EditMarket}
+            exact
+            path="/admin/edit/:id"
+          />
         </Switch>
       </Router>
     </Fragment>

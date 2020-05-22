@@ -18,6 +18,17 @@ const initialState = {
   market: {},
   isMarketDeleted: false,
   isMarketDeletedError: false,
+  marketPictures: [],
+  file: [],
+  name: "",
+  description: "",
+  category: "",
+  address: "",
+  showEditDeleteButton: false,
+  userLocation: {},
+  locationError: null,
+  isMarketFound: true,
+  searchLocation: false,
 };
 
 const store = createContext(initialState);
@@ -59,10 +70,16 @@ const StateProvider = ({ component }) => {
         handleLogin,
         handleSignup,
         onChangeInput,
+        uploadFiles,
         getUserProfile,
         getMarkets,
         getMarket,
         handleDelete,
+        updateMarket,
+        checkIsAdmin,
+        locationAllowed,
+        locationError,
+        searchMarket,
       }}
     >
       {component}
@@ -75,6 +92,39 @@ const StateProvider = ({ component }) => {
     dispatch({ type: "change", payload: value, field: field });
   }
 
+  function locationAllowed({ coords }) {
+    dispatch({
+      type: "change",
+      payload: coords,
+      field: "userLocation",
+    });
+
+    dispatch({
+      type: "change",
+      payload: true,
+      field: "searchLocation",
+    });
+  }
+
+  function locationError(error) {
+    dispatch({
+      type: "change",
+      payload: error.message,
+      field: "locationError",
+    });
+  }
+  function uploadFiles(e) {
+    let fileObj = [],
+      fileArray = [];
+    fileObj.push(e.target.files);
+    for (let i = 0; i < fileObj[0].length; i++) {
+      fileArray.push(URL.createObjectURL(fileObj[0][i]));
+    }
+
+    dispatch({ type: "change", payload: e.target.files, field: e.target.name });
+    dispatch({ type: "change", payload: fileArray, field: "marketPictures" });
+  }
+
   async function handleLogin() {
     const { email, password } = state;
 
@@ -82,7 +132,7 @@ const StateProvider = ({ component }) => {
       axios.post(`${process.env.REACT_APP_API_URL}/users/login`, {
         email,
         password,
-      })
+      }),
     );
 
     if (error) {
@@ -131,7 +181,7 @@ const StateProvider = ({ component }) => {
         firstName,
         lastName,
         confirmPassword,
-      })
+      }),
     );
 
     if (error) {
@@ -178,7 +228,7 @@ const StateProvider = ({ component }) => {
         headers: {
           Authorization: bearerToken,
         },
-      })
+      }),
     );
 
     if (error) dispatch({ type: "hide loader" });
@@ -198,7 +248,7 @@ const StateProvider = ({ component }) => {
         headers: {
           Authorization: bearerToken,
         },
-      })
+      }),
     );
 
     if (error) dispatch({ type: "hide loader" });
@@ -218,7 +268,7 @@ const StateProvider = ({ component }) => {
         headers: {
           Authorization: bearerToken,
         },
-      })
+      }),
     );
     if (error) {
       dispatch({
@@ -240,6 +290,101 @@ const StateProvider = ({ component }) => {
     }
   }
 
+  async function updateMarket() {
+    const bearerToken = localStorage.getItem("token");
+    const {
+      name,
+      description,
+      category,
+      address,
+      market,
+      file,
+      marketPictures,
+    } = state;
+    const payload = {
+      name,
+      description,
+      category,
+      address,
+      ...market,
+    };
+
+    const blobFile = new Blob([file]); // kind of works and choses stream as content type of file (not request)
+    const data = new FormData();
+    data.append("pictures", blobFile);
+    data.append("id", payload.id);
+    data.append("name", payload.name);
+    data.append("description", payload.description);
+    data.append("category", payload.category);
+    data.append("address", payload.address);
+    data.append("images", payload.pictures);
+    data.append("isNew", file.length > 0 ? "true" : "false");
+    console.log(data, file);
+
+    const [error, response] = await to(
+      axios.patch(`${process.env.REACT_APP_API_URL}/markets`, {
+        name,
+        category,
+        description,
+        address,
+        marketPictures,
+      }, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: bearerToken,
+        },
+      }),
+    );
+    if (error) {
+      dispatch({
+        type: "change",
+        payload: true,
+        field: "isMarketDeletedError",
+      });
+      dispatch({
+        type: "clear error",
+        payload: false,
+        field: "isMarketDeletedError",
+      });
+    } else {
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+      dispatch({
+        type: "change",
+        payload: response.data.data.market,
+        field: "market",
+      });
+    }
+  }
+
   async function handleDelete(id) {
     const bearerToken = localStorage.getItem("token");
     const { market, markets } = state;
@@ -252,8 +397,8 @@ const StateProvider = ({ component }) => {
           headers: {
             Authorization: bearerToken,
           },
-        }
-      )
+        },
+      ),
     );
 
     if (error) {
@@ -269,7 +414,7 @@ const StateProvider = ({ component }) => {
       });
     } else {
       const newMarkets = markets.filter(
-        (market) => market.id !== marketToDelete
+        (market) => market.id !== marketToDelete,
       );
 
       dispatch({
@@ -293,6 +438,47 @@ const StateProvider = ({ component }) => {
       dispatch({
         type: "change",
         payload: newMarkets,
+        field: "markets",
+      });
+    }
+  }
+
+  function checkIsAdmin() {
+    const bearerToken = localStorage.getItem("token");
+    if (!bearerToken) {
+      dispatch({
+        type: "change",
+        payload: false,
+        field: "showEditDeleteButton",
+      });
+    } else {
+      dispatch({
+        type: "change",
+        payload: true,
+        field: "showEditDeleteButton",
+      });
+    }
+  }
+
+  async function searchMarket() {
+    console.log("called");
+    const { name, category, userLocation } = state;
+    const [error, response] = await to(
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/search?name=${name}&category=${category}&latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`,
+      ),
+    );
+
+    if (error || !response.data) {
+      dispatch({
+        type: "change",
+        payload: false,
+        field: "isMarketFound",
+      });
+    } else {
+      dispatch({
+        type: "change",
+        payload: response.data.data.markets,
         field: "markets",
       });
     }

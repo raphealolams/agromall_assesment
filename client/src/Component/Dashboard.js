@@ -11,7 +11,6 @@ const DashBoard = () => {
   const globalState = useContext(store);
   const {
     handleDelete,
-    loadDashBoard,
     getUserProfile,
     getMarkets,
     state: { markets, isMarketDeleted },

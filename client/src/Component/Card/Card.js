@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Image from "../Image/Image";
 import Button from "../Button/Button";
 
-const Card = ({ cardData, onClick }) => {
+const Card = ({ cardData, onClick, showEditDeleteButton = true }) => {
   return (
     <div className="row row-cols-1 row-cols-md-3">
       {cardData.map((data) => {
@@ -21,10 +21,12 @@ const Card = ({ cardData, onClick }) => {
 
               <div className="card-body">
                 <p className="card-title text-muted">
-                  <b>Name:</b> {data.name}
+                  <b>Name:</b>
+                  {data.name}
                 </p>
                 <p className="card-text text-muted">
-                  <b>Description:</b> {data.description.slice(0, 100)}
+                  <b>Description:</b>
+                  {data.description.slice(0, 100)}
                 </p>
               </div>
               <div className="card-footer">
@@ -34,17 +36,19 @@ const Card = ({ cardData, onClick }) => {
                     buttonTitle="View"
                   />
                 </Link>
-                <Link to={`/edit/${data.id}`}>
+                {showEditDeleteButton &&
+                  <Link to={`/edit/${data.id}`}>
+                    <Button
+                      buttonClassName="btn btn-outline-primary m-2"
+                      buttonTitle="Edit"
+                    />
+                  </Link>}
+                {showEditDeleteButton &&
                   <Button
-                    buttonClassName="btn btn-outline-primary m-2"
-                    buttonTitle="Edit"
-                  />
-                </Link>
-                <Button
-                  buttonClassName="btn btn-outline-danger m-2"
-                  buttonTitle="Delete"
-                  onClick={() => onClick(data.id)}
-                />
+                    buttonClassName="btn btn-outline-danger m-2"
+                    buttonTitle="Delete"
+                    onClick={() => onClick(data.id)}
+                  />}
               </div>
             </div>
           </div>

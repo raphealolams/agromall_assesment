@@ -12,7 +12,7 @@ module.exports = (app, options, controllers) => {
     cors({
       origin: "*",
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-    })
+    }),
   );
 
   app.use(loggerMiddleware);
@@ -26,14 +26,21 @@ module.exports = (app, options, controllers) => {
   app.post("/api/v1/users/login", user.login);
   app.get("/api/v1/users/me", verifyToken, user.me);
 
-  app.get("/api/v1/markets", verifyToken, market.getMarkets);
-  app.get("/api/v1/markets/:id", verifyToken, market.getMarket);
+  app.get("/api/v1/markets", market.getMarkets);
+  app.get("/api/v1/markets/:id", market.getMarket);
+  app.get("/api/v1/search/", market.searchMarkets);
   app.post(
     "/api/v1/markets",
     verifyToken,
     multerUploads(multer),
-    market.createMarket
+    market.createMarket,
   );
-  app.patch("/api/v1/markets", verifyToken, market.updateMarket);
+
+  app.patch(
+    "/api/v1/markets",
+    multerUploads(multer),
+    verifyToken,
+    market.updateMarket,
+  );
   app.delete("/api/v1/markets/:id", verifyToken, market.deleteMarket);
 };

@@ -4,6 +4,7 @@ const locationFinder = (options) => {
   const sortLocation = (locations, currentLocation) => {
     let mapped = mapLocation(locations, currentLocation);
     let sorted = mapped.sort((a, b) => a.dist - b.dist);
+
     return sorted[0].dist < 70000 ? sorted.slice(0, 5) : null;
   };
 
@@ -15,15 +16,15 @@ const locationFinder = (options) => {
     // let numbers = /[-+]?[0-9]*\.?[0-9]+/;
     let numbers = /^-?[0-9]\d*(\.\d+)?$/;
     if (
-      !numbers.test(locations.latitude) ||
-      !numbers.test(locations.longitude)
+      !numbers.test(locations.coordinate.latitude) ||
+      !numbers.test(locations.coordinate.longitude)
     ) {
       return {};
     }
 
     return {
       coord: locations,
-      dist: geolib.getDistance(currentLocation, locations),
+      dist: geolib.getDistance(currentLocation, locations.coordinate),
     };
   };
 

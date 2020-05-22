@@ -4,7 +4,13 @@
  * @author we already know that we are going to query the `some` database table
  */
 const repository = (database) => {
-  const { Users, Markets, sequelize, to } = database;
+  const {
+    Users,
+    Markets,
+    sequelize,
+    Sequelize: { Op },
+    to,
+  } = database;
 
   /**
    *
@@ -82,7 +88,7 @@ const repository = (database) => {
           name: params.name,
           category: params.category,
           description: params.description,
-          images: params.images,
+          pictures: params.pictures,
           address: params.address,
           coordinate: params.coordinate,
         },
@@ -133,6 +139,28 @@ const repository = (database) => {
     };
   };
 
+  const searchMarkets = async (params, attributes) => {
+    const [error, markets] = await to(
+      Markets.findAll({
+        attributes: attributes instanceof Array ? attributes : undefined,
+        where: {
+          isDeleted: false,
+          [Op.or]: {
+            name: {
+              [Op.like]: `%${params.name}%`,
+            },
+            category: {
+              [Op.like]: `%${params.category}%`,
+            },
+          },
+        },
+      })
+    );
+    return {
+      error: error || null,
+      markets,
+    };
+  };
   const updateMarket = async (whereClause, valueToUpdate) => {
     const [error, market] = await to(
       Markets.update(valueToUpdate, {
@@ -163,6 +191,7 @@ const repository = (database) => {
     findMarkets,
     findMarket,
     updateMarket,
+    searchMarkets,
   });
 };
 

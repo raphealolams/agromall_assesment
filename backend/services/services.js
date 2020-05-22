@@ -7,17 +7,16 @@ const services = (options) => {
   } = options;
 
   const handleGeoCoding = async (payload) => {
-    const url =
-      payload.type == "latlong"
-        ? `${googleUrl}?latlng=${payload.latLong}&key=${googleKey}`
-        : `${googleUrl}?address=${payload.address}&key=${googleKey}`;
+    const url = payload.type == "latlong"
+      ? `${googleUrl}?latlng=${payload.latLong}&key=${googleKey}`
+      : `${googleUrl}?address=${payload.address}&key=${googleKey}`;
 
     const [error, response] = await to(
       got(url, {
         method: "GET",
         allowGetBody: true,
         responseType: "json",
-      })
+      }),
     );
 
     return {
@@ -29,15 +28,26 @@ const services = (options) => {
   const handleUploadToCloud = (file) => {
     return new Promise((resolve, reject) => {
       return cloudinary.uploader
-        .upload(file, { resource_type: "video" })
+        .upload(file)
         .then((result) => resolve(result))
-        .catch((error) => reject(error));
+        .catch((error) => (console.log(error), reject(error)));
     });
+  };
+
+  const performUpload = (images) => {
+    const functionArray = [];
+
+    images.map((image) => {
+      functionArray.push(handleUploadToCloud(image.path));
+    });
+
+    return Promise.all(functionArray);
   };
 
   return Object.create({
     handleGeoCoding,
     handleUploadToCloud,
+    performUpload,
   });
 };
 
