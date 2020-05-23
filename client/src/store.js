@@ -1,5 +1,4 @@
 import React, { createContext, useReducer } from "react";
-import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 import to from "await-to-js";
@@ -28,7 +27,8 @@ const initialState = {
   userLocation: {},
   locationError: null,
   isMarketFound: true,
-  searchLocation: false,
+  showLoginButton: true,
+  logUserOut: false,
 };
 
 const store = createContext(initialState);
@@ -80,6 +80,8 @@ const StateProvider = ({ component }) => {
         locationAllowed,
         locationError,
         searchMarket,
+        doLogout,
+        addMarket,
       }}
     >
       {component}
@@ -93,17 +95,7 @@ const StateProvider = ({ component }) => {
   }
 
   function locationAllowed({ coords }) {
-    dispatch({
-      type: "change",
-      payload: coords,
-      field: "userLocation",
-    });
-
-    dispatch({
-      type: "change",
-      payload: true,
-      field: "searchLocation",
-    });
+    searchMarket({ latitude: coords.latitude, longitude: coords.longitude });
   }
 
   function locationError(error) {
@@ -147,27 +139,27 @@ const StateProvider = ({ component }) => {
         field: "authError",
       });
       dispatch({
-        type: "clear error",
+        type: "change",
         payload: false,
         field: "authError",
       });
       dispatch({
-        type: "clear error",
+        type: "change",
         payload: {},
         field: "authErrors",
       });
     } else {
+      localStorage.setItem("token", response.data.data.bearerToken);
       dispatch({
         type: "change",
         payload: true,
         field: "authSuccessful",
       });
       dispatch({
-        type: "clear error",
+        type: "change",
         payload: false,
         field: "authSuccessful",
       });
-      localStorage.setItem("token", response.data.data.bearerToken);
     }
   }
 
@@ -196,12 +188,12 @@ const StateProvider = ({ component }) => {
         field: "authError",
       });
       dispatch({
-        type: "clear error",
+        type: "change",
         payload: false,
         field: "authError",
       });
       dispatch({
-        type: "clear error",
+        type: "change",
         payload: {},
         field: "authErrors",
       });
@@ -212,7 +204,7 @@ const StateProvider = ({ component }) => {
         field: "authSuccessful",
       });
       dispatch({
-        type: "clear error",
+        type: "change",
         payload: false,
         field: "authSuccessful",
       });
@@ -285,6 +277,41 @@ const StateProvider = ({ component }) => {
       dispatch({
         type: "change",
         payload: response.data.data.market,
+        field: "market",
+      });
+    }
+  }
+
+  async function addMarket() {
+    const bearerToken = localStorage.getItem("token");
+    const { name, description, category, address, file } = state;
+
+    const data = new FormData();
+    data.append("pictures", file);
+    data.append("name", name);
+    data.append("description", description);
+    data.append("category", category);
+    data.append("address", address);
+    data.append("isNew", "false");
+
+    const [error, response] = await to(
+      axios.post(`${process.env.REACT_APP_API_URL}/markets`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: bearerToken,
+        },
+      })
+    );
+    if (error) {
+      dispatch({
+        type: "change",
+        payload: true,
+        field: "isMarketAddedError",
+      });
+    } else {
+      dispatch({
+        type: "change",
+        payload: response.data.data.message,
         field: "market",
       });
     }
@@ -461,31 +488,34 @@ const StateProvider = ({ component }) => {
         payload: true,
         field: "showEditDeleteButton",
       });
+      dispatch({
+        type: "change",
+        payload: false,
+        field: "showLoginButton",
+      });
     }
   }
 
-  async function searchMarket() {
-    console.log("called");
-    const { name, category, userLocation } = state;
+  function doLogout() {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  }
+
+  async function searchMarket({ latitude, longitude }) {
+    const { name, category } = state;
     const [error, response] = await to(
       axios.get(
-        `${process.env.REACT_APP_API_URL}/search?name=${name}&category=${category}&latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`
+        `${process.env.REACT_APP_API_URL}/search?name=${name}&category=${category}&latitude=${latitude}&longitude=${longitude}`
       )
     );
 
-    console.log(response.data);
-    if (error || !response.data) {
+    if (error || !response) {
       dispatch({
         type: "change",
         payload: false,
         field: "isMarketFound",
       });
     } else {
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "searchLocation",
-      });
       dispatch({
         type: "change",
         payload: response.data.data.markets,

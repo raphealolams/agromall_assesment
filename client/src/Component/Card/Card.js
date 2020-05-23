@@ -30,25 +30,33 @@ const Card = ({ cardData, onClick, showEditDeleteButton = true }) => {
                 </p>
               </div>
               <div className="card-footer">
-                <Link to={`/view/${data.id}`}>
+                <Link
+                  to={`${
+                    showEditDeleteButton
+                      ? "/admin/view/" + data.id
+                      : "/view/" + data.id
+                  }`}
+                >
                   <Button
                     buttonClassName="btn btn-outline-primary m-2"
                     buttonTitle="View"
                   />
                 </Link>
-                {showEditDeleteButton &&
-                  <Link to={`/edit/${data.id}`}>
+                {showEditDeleteButton && (
+                  <Link to={`/admin/edit/${data.id}`}>
                     <Button
                       buttonClassName="btn btn-outline-primary m-2"
                       buttonTitle="Edit"
                     />
-                  </Link>}
-                {showEditDeleteButton &&
+                  </Link>
+                )}
+                {showEditDeleteButton && (
                   <Button
                     buttonClassName="btn btn-outline-danger m-2"
                     buttonTitle="Delete"
                     onClick={() => onClick(data.id)}
-                  />}
+                  />
+                )}
               </div>
             </div>
           </div>

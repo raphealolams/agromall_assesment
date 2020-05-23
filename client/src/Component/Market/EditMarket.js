@@ -13,32 +13,48 @@ const EditMarket = () => {
     uploadFiles,
     getMarket,
     updateMarket,
-    state: { market, marketPictures, name, description, category, address },
+    doLogout,
+    onChangeInput,
+    checkIsAdmin,
+    state: {
+      market,
+      marketPictures,
+      name,
+      description,
+      category,
+      address,
+      showLoginButton,
+    },
   } = globalState;
   useEffect(() => {
     getMarket(id);
+    checkIsAdmin();
   }, []);
-  console.log({ market, marketPictures });
+
   return (
     <div>
       <div>
-        <NavBar />
+        <NavBar showLoginButton={showLoginButton} onClick={doLogout} />
       </div>
       <div>
-        <Form
-          uploadFiles={uploadFiles}
-          fileArray={
-            marketPictures.length > 0 ? marketPictures : market.pictures
-          }
-          buttonTitle="Save Changes"
-          name={name.length > 0 ? name : market.name}
-          description={
-            description.length > 0 ? description : market.description
-          }
-          category={category.length > 0 ? category : market.category}
-          address={address.length > 0 ? address : market.address}
-          handleClick={updateMarket}
-        />
+        {market && (
+          <Form
+            uploadFiles={uploadFiles}
+            onChangeInput={onChangeInput}
+            fileArray={
+              marketPictures.length > 0 ? marketPictures : market.pictures
+            }
+            buttonTitle="Save Changes"
+            name={name.length > 0 ? name : market.name}
+            category={category.length > 0 ? category : market.category}
+            description={
+              description.length > 0 ? description : market.description
+            }
+            address={address.length > 0 ? address : market.address}
+            handleClick={updateMarket}
+            shouldDisable={true}
+          />
+        )}
       </div>
     </div>
   );

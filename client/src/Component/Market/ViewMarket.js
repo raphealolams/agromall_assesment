@@ -20,7 +20,14 @@ const ViewMarket = () => {
     getMarket,
     handleDelete,
     checkIsAdmin,
-    state: { market, isMarketDeletedError, isMarketDeleted, showEditDeleteButton },
+    doLogout,
+    state: {
+      market,
+      isMarketDeletedError,
+      isMarketDeleted,
+      showEditDeleteButton,
+      showLoginButton,
+    },
   } = globalState;
 
   useEffect(() => {
@@ -55,9 +62,9 @@ const ViewMarket = () => {
           position: toast.POSITION.TOP_RIGHT,
         })}
 
-      {isMarketDeleted && <Redirect exact to="/home" />}
+      {isMarketDeleted && <Redirect exact to="/admin/home" />}
       <div className="pt-2">
-        <NavBar />
+        <NavBar showLoginButton={showLoginButton} onClick={doLogout} />
       </div>
       <div className="container pt-5">
         <div className="container">
@@ -83,18 +90,21 @@ const ViewMarket = () => {
                       </p>
                     </div>
                     <div className="card-footer">
-                      {showEditDeleteButton &&
-                        <Link to={`/edit/${market.id}`}>
+                      {showEditDeleteButton && (
+                        <Link to={`/admin/edit/${market.id}`}>
                           <Button
                             buttonClassName="btn btn-outline-primary m-2"
                             buttonTitle="Edit"
                           />
-                        </Link>}
-                      {showEditDeleteButton && <Button
-                        buttonClassName="btn btn-outline-danger m-2"
-                        buttonTitle="Delete"
-                        onClick={deleteDialog}
-                      />}
+                        </Link>
+                      )}
+                      {showEditDeleteButton && (
+                        <Button
+                          buttonClassName="btn btn-outline-danger m-2"
+                          buttonTitle="Delete"
+                          onClick={deleteDialog}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -103,10 +113,11 @@ const ViewMarket = () => {
                 <div className="embed-responsive embed-responsive-16by9">
                   <iframe
                     className="embed-responsive-item"
-                    src={market.coordinate &&
-                      `${process.env.REACT_APP_API_GOOGLE_URL}?key=${process.env.REACT_APP_API_GOOGLE_KEY}&q=${market.coordinate.latitude},${market.coordinate.longitude}`}
-                  >
-                  </iframe>
+                    src={
+                      market.coordinate &&
+                      `${process.env.REACT_APP_API_GOOGLE_URL}?key=${process.env.REACT_APP_API_GOOGLE_KEY}&q=${market.coordinate.latitude},${market.coordinate.longitude}`
+                    }
+                  ></iframe>
                 </div>
               </div>
             </div>

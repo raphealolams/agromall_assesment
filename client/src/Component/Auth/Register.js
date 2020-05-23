@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { toast } from "react-toastify";
 import { Link, Redirect } from "react-router-dom";
 
@@ -25,7 +25,9 @@ const Register = () => {
         toast.success("Sign up Ok", {
           position: toast.POSITION.TOP_RIGHT,
         })}
-      {globalState.state.authSuccessful ? <Redirect exact to="/home" /> : null}
+      {globalState.state.authSuccessful ? (
+        <Redirect exact to="/admin/home" />
+      ) : null}
 
       <div
         className="d-flex pt-5 justify-content-center align-items-center"

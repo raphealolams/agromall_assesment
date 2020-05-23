@@ -26,7 +26,7 @@ const Login = () => {
         toast.success("Login Successful", {
           position: toast.POSITION.TOP_RIGHT,
         })}
-      {globalState.state.authSuccessful && <Redirect exact to="/home" />}
+      {globalState.state.authSuccessful && <Redirect exact to="/admin/home" />}
       <div
         className="d-flex pt-5 justify-content-center align-items-center"
         style={styles.container}

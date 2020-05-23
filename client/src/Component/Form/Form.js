@@ -1,6 +1,7 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 import Image from "../Image/Image";
+import Button from "../Button/Button";
 const Form = ({
   uploadFiles,
   onChangeInput,
@@ -11,43 +12,53 @@ const Form = ({
   description,
   address,
   handleClick,
+  shouldDisable,
 }) => {
-  console.log(handleClick);
   const styles = {
     multiPreview: {
       maxWidth: "150px",
     },
   };
+
+  const disabled = shouldDisable
+    ? shouldDisable
+    : !(
+        category.length > 0 &&
+        name.length > 0 &&
+        description.length > 0 &&
+        address.length > 0
+      );
+
   return (
     <div>
       <div className="container pt-5">
         <div className="form-row">
           <div className="form-group col-md-6">
-            <label for="inputEmail4">Market Name</label>
+            <label htmlFor="inputEmail4">Market Name</label>
             <input
               type="text"
               className="form-control"
               id="inputEmail4"
               onChange={onChangeInput}
               name="name"
-              value={name}
+              value={name || " "}
             />
           </div>
           <div className="form-group col-md-6">
-            <label for="inputPassword4">Market Category</label>
+            <label htmlFor="inputPassword4">Market Category</label>
             <input
               type="text"
               className="form-control"
               id="inputPassword4"
               onChange={onChangeInput}
               name="category"
-              value={category}
+              value={category || " "}
             />
           </div>
         </div>
         <div className="form-row">
           <div className="form-group col-md-6">
-            <label for="inputAddress">Address</label>
+            <label htmlFor="inputAddress">Address</label>
             <textarea
               type="text"
               className="form-control"
@@ -55,13 +66,13 @@ const Form = ({
               placeholder=""
               onChange={onChangeInput}
               name="address"
-              value={address}
+              value={address || " "}
             >
               {address}
             </textarea>
           </div>
           <div className="form-group col-md-6">
-            <label for="inputAddress2">Description</label>
+            <label htmlFor="inputAddress2">Description</label>
             <textarea
               type="text"
               className="form-control"
@@ -69,13 +80,12 @@ const Form = ({
               placeholder=""
               onChange={onChangeInput}
               name="description"
-              value={description}
+              value={description || " "}
             >
               {description}
             </textarea>
           </div>
         </div>
-
         <div className="form-row">
           <div className="form-group col-md-6">
             <input
@@ -89,7 +99,6 @@ const Form = ({
           <div className="form-group col-md-6">
             <div className="d-flex justify-content-around">
               {(fileArray || []).map((url) => (
-                // <img style={styles.multiPreview} src={url} alt="..." />
                 <Image
                   imageSource={url}
                   customImageStyle={styles.multiPreview}
@@ -99,9 +108,17 @@ const Form = ({
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary" onClick={handleClick}>
-          {buttonTitle}
-        </button>
+
+        <Link to="/admin/home">
+          <Button buttonClassName="btn btn-default" buttonTitle="Back" />
+        </Link>
+
+        <Button
+          buttonClassName="btn btn-primary m-2"
+          buttonTitle={buttonTitle}
+          onClick={handleClick}
+          disabled={!disabled}
+        />
       </div>
     </div>
   );

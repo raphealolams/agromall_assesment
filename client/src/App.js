@@ -17,7 +17,7 @@ import DashBoard from "./Component/Dashboard";
 import AuthenticatedRoute from "./Component/AuthenticatedRoute";
 import ViewMarket from "./Component/Market/ViewMarket";
 import EditMarket from "./Component/Market/EditMarket";
-
+import AddMarket from "./Component/Market/AddMarket";
 import Search from "./Component/Search/Search";
 
 function App() {
@@ -25,14 +25,15 @@ function App() {
     <Fragment>
       <Router>
         <ToastContainer autoClose={4000} />
-        <Route exact path="/" component={Login} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
-
+        <Route exact path="/" component={Search} />
         <Route exact path="/home" component={Search} />
         <Route exact path="/view/:id" component={ViewMarket} />;
         <Switch>
           <AuthenticatedRoute component={DashBoard} exact path="/admin/home" />
+          <AuthenticatedRoute component={AddMarket} exact path="/admin/add" />
+
           <AuthenticatedRoute
             component={ViewMarket}
             exact

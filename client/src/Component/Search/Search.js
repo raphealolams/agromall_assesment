@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 
 import { store } from "../../store";
 import { usePosition } from "../customHooks/usePosition";
@@ -15,12 +16,13 @@ const Search = () => {
     locationAllowed,
     locationError,
     onChangeInput,
-    searchMarket,
-    state: { markets, userLocation, searchLocation },
+    checkIsAdmin,
+    state: { markets, name, category, showLoginButton },
   } = globalState;
 
   useEffect(() => {
     getMarkets();
+    checkIsAdmin();
   }, []);
 
   const askForLocation = (e) => {
@@ -35,13 +37,9 @@ const Search = () => {
     navigator.geolocation.getCurrentPosition(locationAllowed, locationError);
   };
 
-  console.log(searchLocation);
-
-  console.log({ markets });
-
   return (
     <div>
-      {searchLocation && searchMarket()}
+      {showLoginButton && <Redirect exact to="/admin/home" />}
       <div className="pt-2">
         <NavBar />
       </div>
@@ -68,6 +66,7 @@ const Search = () => {
           <Button
             buttonClassName="btn btn-outline-success m-2"
             buttonTitle="Search Market"
+            disabled={!(category.length > 0 && name.length > 0)}
             onClick={(e) => askForLocation(e)}
           />
         </div>

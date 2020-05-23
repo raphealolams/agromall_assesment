@@ -11,6 +11,7 @@ const Slider = ({ pictures, customImageStyle }) => {
         {pictures.map((picture, index) => {
           return (
             <Image
+              key={picture}
               divClassName={`carousel-item ${index === 0 ? "active" : " "}`}
               imageSource={picture}
               imageClassName="d-block w-100"

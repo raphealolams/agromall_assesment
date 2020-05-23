@@ -8,7 +8,7 @@ const Image = ({
   customImageStyle,
 }) => {
   return (
-    <div className={divClassName}>
+    <div className={divClassName} key={imageSource}>
       <img
         src={imageSource}
         className={imageClassName}

@@ -144,15 +144,18 @@ const repository = (database) => {
       Markets.findAll({
         attributes: attributes instanceof Array ? attributes : undefined,
         where: {
-          isDeleted: false,
-          [Op.or]: {
-            name: {
-              [Op.like]: `%${params.name}%`,
+          [Op.and]: [
+            {
+              name: {
+                [Op.like]: `%${params.name}%`,
+              },
             },
-            category: {
-              [Op.like]: `%${params.category}%`,
+            {
+              category: {
+                [Op.like]: `%${params.category}%`,
+              },
             },
-          },
+          ],
         },
       })
     );

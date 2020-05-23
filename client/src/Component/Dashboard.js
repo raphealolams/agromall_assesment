@@ -13,12 +13,15 @@ const DashBoard = () => {
     handleDelete,
     getUserProfile,
     getMarkets,
-    state: { markets, isMarketDeleted },
+    checkIsAdmin,
+    doLogout,
+    state: { markets, isMarketDeleted, showLoginButton },
   } = globalState;
 
   useEffect(() => {
     getUserProfile();
     getMarkets();
+    checkIsAdmin();
   }, []);
 
   const deleteDialog = (id) => {
@@ -39,7 +42,6 @@ const DashBoard = () => {
       ],
     });
   };
-  console.log(globalState.state);
   return (
     <div>
       {isMarketDeleted &&
@@ -47,7 +49,7 @@ const DashBoard = () => {
           position: toast.POSITION.TOP_RIGHT,
         })}
       <div className="pt-2">
-        <NavBar />
+        <NavBar showLoginButton={showLoginButton} onClick={doLogout} />
       </div>
       <div className="container pt-5">
         {markets && <Card cardData={markets} onClick={deleteDialog} />}
