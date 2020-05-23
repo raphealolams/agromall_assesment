@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { toast } from "react-toastify";
 
 import { store } from "../../store";
 
@@ -20,15 +21,26 @@ const AddMarket = () => {
       category,
       address,
       showLoginButton,
+      isMarketAddedError,
+      isMarketAdded,
     },
   } = globalState;
 
   useEffect(() => {
     checkIsAdmin();
-  }, []);
+  }, [checkIsAdmin]);
 
   return (
     <div>
+      {isMarketAddedError &&
+        toast.error("Error Adding Market", {
+          position: toast.POSITION.TOP_RIGHT,
+        })}
+
+      {isMarketAdded &&
+        toast.success("Market Added", {
+          position: toast.POSITION.TOP_RIGHT,
+        })}
       <div>
         <NavBar showLoginButton={showLoginButton} onClick={doLogout} />
       </div>

@@ -11,6 +11,9 @@ const marketController = (options) => {
   const createMarket = async (req, res, next) => {
     try {
       const { body, files } = req;
+
+      const wrongFileType = validators.checkFileType(files);
+
       const errors = validators.checkRequestBody(body, [
         "name",
         "description",
@@ -18,11 +21,13 @@ const marketController = (options) => {
         "address",
       ]);
 
-      if (errors) {
+      if (errors || wrongFileType) {
         return responseHandler.failure(
           res,
           {
-            message: "missing or empty request body",
+            message: wrongFileType
+              ? "unsupported audio file"
+              : "missing or empty request body",
             response: {
               errors,
             },
@@ -45,8 +50,6 @@ const marketController = (options) => {
         .performUpload(files)
         .then(async (images) => {
           let cloudImageUrl = images.map((image) => image.secure_url);
-
-          console.log(body, cloudImageUrl);
           const { market } = await repo.saveMarket({
             name: body.name,
             category: body.category,

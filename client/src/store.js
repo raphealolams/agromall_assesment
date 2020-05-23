@@ -18,7 +18,7 @@ const initialState = {
   isMarketDeleted: false,
   isMarketDeletedError: false,
   marketPictures: [],
-  file: [],
+  files: [],
   name: "",
   description: "",
   category: "",
@@ -29,6 +29,7 @@ const initialState = {
   isMarketFound: true,
   showLoginButton: true,
   logUserOut: false,
+  isMarketAdded: false,
 };
 
 const store = createContext(initialState);
@@ -107,13 +108,15 @@ const StateProvider = ({ component }) => {
   }
   function uploadFiles(e) {
     let fileObj = [],
-      fileArray = [];
+      fileArray = [],
+      files = [];
     fileObj.push(e.target.files);
     for (let i = 0; i < fileObj[0].length; i++) {
       fileArray.push(URL.createObjectURL(fileObj[0][i]));
+      files.push(fileObj[0][i]);
     }
 
-    dispatch({ type: "change", payload: e.target.files, field: e.target.name });
+    dispatch({ type: "change", payload: files, field: "files" });
     dispatch({ type: "change", payload: fileArray, field: "marketPictures" });
   }
 
@@ -284,10 +287,13 @@ const StateProvider = ({ component }) => {
 
   async function addMarket() {
     const bearerToken = localStorage.getItem("token");
-    const { name, description, category, address, file } = state;
+    const { name, description, category, address, files } = state;
 
     const data = new FormData();
-    data.append("pictures", file);
+
+    for (var x = 0; x < files.length; x++) {
+      data.append("pictures", files[x]);
+    }
     data.append("name", name);
     data.append("description", description);
     data.append("category", category);
@@ -295,7 +301,10 @@ const StateProvider = ({ component }) => {
     data.append("isNew", "false");
 
     const [error, response] = await to(
-      axios.post(`${process.env.REACT_APP_API_URL}/markets`, data, {
+      axios({
+        url: `${process.env.REACT_APP_API_URL}/markets`,
+        method: "POST",
+        data: data,
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: bearerToken,
@@ -308,11 +317,46 @@ const StateProvider = ({ component }) => {
         payload: true,
         field: "isMarketAddedError",
       });
+      dispatch({
+        type: "change",
+        payload: false,
+        field: "isMarketAddedError",
+      });
     } else {
       dispatch({
         type: "change",
-        payload: response.data.data.message,
-        field: "market",
+        payload: true,
+        field: "isMarketAdded",
+      });
+      dispatch({
+        type: "change",
+        payload: false,
+        field: "isMarketAdded",
+      });
+      dispatch({
+        type: "change",
+        payload: "",
+        field: "name",
+      });
+      dispatch({
+        type: "change",
+        payload: "",
+        field: "category",
+      });
+      dispatch({
+        type: "change",
+        payload: "",
+        field: "description",
+      });
+      dispatch({
+        type: "change",
+        payload: "",
+        field: "address",
+      });
+      dispatch({
+        type: "change",
+        payload: [],
+        field: "marketPictures",
       });
     }
   }

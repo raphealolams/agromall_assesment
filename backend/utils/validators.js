@@ -50,11 +50,29 @@ const validators = (_) => {
   };
 
   const checkFileType = (originalname) => {
-    return (
-      ["png", "jpeg"].indexOf(
-        originalname.split(".")[originalname.split(".").length - 1]
-      ) === -1
-    );
+    const supportExtensions = ["png", "jpeg"];
+    const errors = [];
+    if (originalname instanceof Array) {
+      originalname.map((name) => {
+        if (
+          !supportExtensions.indexOf(
+            name.originalname.split(".")[
+              name.originalname.split(".").length - 1
+            ]
+          ) === -1
+        ) {
+          errors.push(name.originalname);
+        }
+      });
+
+      if (errors.length > 0) return true;
+      else return false;
+    } else
+      return (
+        supportExtensions.indexOf(
+          originalname.split(".")[originalname.split(".").length - 1]
+        ) === -1
+      );
   };
 
   return Object.create({

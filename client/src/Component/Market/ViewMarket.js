@@ -33,7 +33,7 @@ const ViewMarket = () => {
   useEffect(() => {
     getMarket(id);
     checkIsAdmin();
-  }, []);
+  }, [getMarket, checkIsAdmin, id]);
 
   const deleteDialog = (e) => {
     e.preventDefault();

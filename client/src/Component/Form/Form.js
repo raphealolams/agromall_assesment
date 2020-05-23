@@ -22,12 +22,10 @@ const Form = ({
 
   const disabled = shouldDisable
     ? shouldDisable
-    : !(
-        category.length > 0 &&
-        name.length > 0 &&
-        description.length > 0 &&
-        address.length > 0
-      );
+    : category.length > 0 &&
+      name.length > 0 &&
+      description.length > 0 &&
+      address.length > 0;
 
   return (
     <div>

@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 
 import { store } from "../../store";
-import { usePosition } from "../customHooks/usePosition";
 
 import NavBar from "../Nav/NavBar";
 import Card from "../Card/Card";
@@ -23,7 +22,7 @@ const Search = () => {
   useEffect(() => {
     getMarkets();
     checkIsAdmin();
-  }, []);
+  }, [getMarkets, checkIsAdmin]);
 
   const askForLocation = (e) => {
     const geo = navigator.geolocation;

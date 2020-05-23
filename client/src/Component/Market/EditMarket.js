@@ -29,7 +29,7 @@ const EditMarket = () => {
   useEffect(() => {
     getMarket(id);
     checkIsAdmin();
-  }, []);
+  }, [getMarket, checkIsAdmin, id]);
 
   return (
     <div>

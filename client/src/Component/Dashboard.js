@@ -22,7 +22,7 @@ const DashBoard = () => {
     getUserProfile();
     getMarkets();
     checkIsAdmin();
-  }, []);
+  }, [getUserProfile, getMarkets, checkIsAdmin]);
 
   const deleteDialog = (id) => {
     confirmAlert({
