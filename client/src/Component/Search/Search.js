@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
-import { Redirect } from "react-router-dom";
 
 import { store } from "../../store";
 
 import NavBar from "../Nav/NavBar";
 import Card from "../Card/Card";
 import Button from "../Button/Button";
+import Spinner from "../Spinner/Spinner";
 
 const Search = () => {
   const globalState = useContext(store);
@@ -16,13 +16,13 @@ const Search = () => {
     locationError,
     onChangeInput,
     checkIsAdmin,
-    state: { markets, name, category, showLoginButton },
+    state: { markets, name, category, showSpinner },
   } = globalState;
 
   useEffect(() => {
-    getMarkets();
     checkIsAdmin();
-  }, [getMarkets, checkIsAdmin]);
+    getMarkets();
+  }, []);
 
   const askForLocation = (e) => {
     const geo = navigator.geolocation;
@@ -38,7 +38,6 @@ const Search = () => {
 
   return (
     <div>
-      {showLoginButton && <Redirect exact to="/admin/home" />}
       <div className="pt-2">
         <NavBar />
       </div>
@@ -68,6 +67,7 @@ const Search = () => {
             disabled={!(category.length > 0 && name.length > 0)}
             onClick={(e) => askForLocation(e)}
           />
+          {showSpinner && <Spinner />}
         </div>
       </div>
       <div className="container pt-5">

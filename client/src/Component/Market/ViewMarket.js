@@ -33,7 +33,7 @@ const ViewMarket = () => {
   useEffect(() => {
     getMarket(id);
     checkIsAdmin();
-  }, [getMarket, checkIsAdmin, id]);
+  }, []);
 
   const deleteDialog = (e) => {
     e.preventDefault();
@@ -54,7 +54,7 @@ const ViewMarket = () => {
       ],
     });
   };
-
+  console.log(showLoginButton);
   return (
     <div>
       {isMarketDeletedError &&
@@ -84,6 +84,9 @@ const ViewMarket = () => {
                     <div className="card-body">
                       <p className="card-title text-muted">
                         <b>Name: {market.name}</b>
+                      </p>
+                      <p className="card-title text-muted">
+                        <b>Category: {market.category}</b>
                       </p>
                       <p className="card-text text-muted">
                         <b>Description: {market.description}</b>

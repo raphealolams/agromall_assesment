@@ -5,7 +5,6 @@ import { store } from "../../store";
 
 import Form from "../Form/Form";
 import NavBar from "../Nav/NavBar";
-
 const AddMarket = () => {
   const globalState = useContext(store);
   const {
@@ -14,7 +13,7 @@ const AddMarket = () => {
     doLogout,
     onChangeInput,
     checkIsAdmin,
-    state: {
+state: {
       marketPictures,
       name,
       description,
@@ -22,13 +21,14 @@ const AddMarket = () => {
       address,
       showLoginButton,
       isMarketAddedError,
-      isMarketAdded,
+  isMarketAdded,
+ showSpinner,
     },
   } = globalState;
 
   useEffect(() => {
     checkIsAdmin();
-  }, [checkIsAdmin]);
+  }, []);
 
   return (
     <div>
@@ -55,6 +55,7 @@ const AddMarket = () => {
           category={category}
           address={address}
           handleClick={addMarket}
+          showSpinner={showSpinner}
         />
       </div>
     </div>

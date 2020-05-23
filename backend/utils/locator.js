@@ -4,8 +4,7 @@ const locationFinder = (options) => {
   const sortLocation = (locations, currentLocation) => {
     let mapped = mapLocation(locations, currentLocation);
     let sorted = mapped.sort((a, b) => a.dist - b.dist);
-
-    return sorted[0].dist < 70000 ? sorted.slice(0, 5) : null;
+    return sorted;
   };
 
   /**

@@ -5,10 +5,13 @@ import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as serviceWorker from "./serviceWorker";
 import { StateProvider } from "./store";
+import ErrorBoundary from "./Component/ErrorBoundary/ErrorBoundary";
 
 ReactDOM.render(
   <React.StrictMode>
-    <StateProvider component={<App />} />
+    <ErrorBoundary>
+      <StateProvider component={<App />} />
+    </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")
 );

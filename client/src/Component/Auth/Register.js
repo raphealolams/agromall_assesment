@@ -4,9 +4,16 @@ import { Link, Redirect } from "react-router-dom";
 
 import { store } from "../../store";
 
+import Button from "../Button/Button";
+import Spinner from "../Spinner/Spinner";
+
 const Register = () => {
   const globalState = useContext(store);
-  const { handleSignup, onChangeInput } = globalState;
+  const {
+    handleSignup,
+    onChangeInput,
+    state: { email, firstName, lastName, password, confirmPassword, showSpinner, authError, authErrors, authSuccessful },
+  } = globalState;
 
   const styles = {
     container: {
@@ -14,20 +21,24 @@ const Register = () => {
     },
   };
 
+  console.log(globalState.state);
+  const disabled =
+    (email.length > 0 && firstName.length > 0 && password.length > 0 &&
+      confirmPassword.length > 0 && (password === confirmPassword));
   return (
     <div>
-      {globalState.state.authError &&
-        toast.error(globalState.state.authErrors.message, {
+      {authError &&
+        toast.error(authErrors.message, {
           position: toast.POSITION.TOP_RIGHT,
         })}
 
-      {globalState.state.authSuccessful &&
+      {authSuccessful &&
         toast.success("Sign up Ok", {
           position: toast.POSITION.TOP_RIGHT,
         })}
-      {globalState.state.authSuccessful ? (
+      {authSuccessful && (
         <Redirect exact to="/admin/home" />
-      ) : null}
+      )}
 
       <div
         className="d-flex pt-5 justify-content-center align-items-center"
@@ -44,6 +55,7 @@ const Register = () => {
                 type="email"
                 placeholder="email"
                 name="email"
+                value={email}
                 onChange={onChangeInput}
               />
             </div>
@@ -54,6 +66,7 @@ const Register = () => {
                 type="text"
                 placeholder="First Name"
                 name="firstName"
+                value={firstName}
                 onChange={onChangeInput}
               />
             </div>
@@ -64,6 +77,7 @@ const Register = () => {
                 type="text"
                 placeholder="Last Name"
                 name="lastName"
+                value={lastName}
                 onChange={onChangeInput}
               />
             </div>
@@ -74,6 +88,7 @@ const Register = () => {
                 type="password"
                 placeholder="Password"
                 name="password"
+                value={password}
                 onChange={onChangeInput}
               />
             </div>
@@ -84,25 +99,24 @@ const Register = () => {
                 type="password"
                 placeholder="Password"
                 name="confirmPassword"
+                value={confirmPassword}
                 onChange={onChangeInput}
               />
             </div>
             <div className="row pt-3">
               <div className="col-6">
-                <button
-                  className="btn btn-primary px-4"
-                  type="button"
+                <Button
+                  buttonClassName="btn btn-primary px-4"
+                  buttonTitle="Signup"
                   onClick={handleSignup}
-                >
-                  Signup
-                </button>
+                  disabled={!disabled}
+                />
+                {showSpinner && <Spinner />}
               </div>
 
               <div className="col-6 px-5">
-                <Link to="/">
-                  <button className="btn" type="button">
-                    Login!
-                  </button>
+                <Link to="/login">
+                  <Button buttonClassName="btn" buttonTitle="Login!" />
                 </Link>
               </div>
             </div>

@@ -3,10 +3,12 @@ import { toast } from "react-toastify";
 import { Link, Redirect } from "react-router-dom";
 
 import { store } from "../../store";
-
+import Button from "../Button/Button";
+import Spinner from "../Spinner/Spinner";
 const Login = () => {
   const globalState = useContext(store);
-  const { handleLogin, onChangeInput } = globalState;
+  const { handleLogin, onChangeInput, state: {showSpinner, email, password } } =
+    globalState;
 
   const styles = {
     container: {
@@ -42,6 +44,7 @@ const Login = () => {
                 type="email"
                 placeholder="email"
                 name="email"
+                value={email}
                 onChange={onChangeInput}
               />
             </div>
@@ -52,25 +55,25 @@ const Login = () => {
                 type="password"
                 placeholder="Password"
                 name="password"
+                value={password}
                 onChange={onChangeInput}
               />
             </div>
             <div className="row pt-3">
               <div className="col-6">
-                <button
-                  className="btn btn-primary px-4"
-                  type="button"
+                <Button
+                  buttonClassName="btn btn-primary px-4"
+                  buttonTitle="Login"
                   onClick={handleLogin}
-                >
-                  Login
-                </button>
+                  disabled={!(email.length > 0 && password.length > 0)}
+                />
+
+                {showSpinner && <Spinner />}
               </div>
 
               <div className="col-6 px-5">
                 <Link to="/register">
-                  <button className="btn" type="button">
-                    Signup!
-                  </button>
+                  <Button buttonClassName="btn" buttonTitle="Signup!" />
                 </Link>
               </div>
             </div>

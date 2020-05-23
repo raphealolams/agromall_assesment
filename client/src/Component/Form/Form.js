@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Image from "../Image/Image";
 import Button from "../Button/Button";
+import Spinner from "../Spinner/Spinner";
+
 const Form = ({
   uploadFiles,
   onChangeInput,
@@ -13,6 +15,7 @@ const Form = ({
   address,
   handleClick,
   shouldDisable,
+  showSpinner,
 }) => {
   const styles = {
     multiPreview: {
@@ -20,12 +23,10 @@ const Form = ({
     },
   };
 
-  const disabled = shouldDisable
-    ? shouldDisable
-    : category.length > 0 &&
-      name.length > 0 &&
-      description.length > 0 &&
-      address.length > 0;
+  const disabled = shouldDisable ? shouldDisable : category.length > 0 &&
+    name.length > 0 &&
+    description.length > 0 &&
+    address.length > 0;
 
   return (
     <div>
@@ -117,6 +118,7 @@ const Form = ({
           onClick={handleClick}
           disabled={!disabled}
         />
+        {showSpinner && <Spinner />}
       </div>
     </div>
   );

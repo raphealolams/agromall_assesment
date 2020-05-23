@@ -99,18 +99,21 @@ const marketController = (options) => {
     }
   };
 
-  const updateMarket = (req, res, next) => {
+  const updateMarket = async (req, res, next) => {
     try {
       const { body, files } = req;
-      console.error(body, files);
 
+      let wrongFileType;
+      if (files) wrongFileType = validators.checkFileType(files);
       const errors = validators.checkRequestBody(body, ["id"]);
 
-      if (errors) {
+      if (errors || wrongFileType) {
         return responseHandler.failure(
           res,
           {
-            message: "missing or empty request body",
+            message: wrongFileType
+              ? "unsupported audio file"
+              : "missing or empty request body",
             response: {
               errors,
             },
@@ -119,39 +122,75 @@ const marketController = (options) => {
         );
       }
 
-      return services
-        .performUpload(files)
-        .then(async (images) => {
-          body.pictures = images.map((image) => image.secure_url);
-          const { error, market } = await repo.updateMarket(
-            { id: body.id },
-            body
-          );
+      if (files.length > 0) {
+        return services
+          .performUpload(files)
+          .then(async (images) => {
+            body.pictures = images.map((image) => image.secure_url);
+            const { error, market } = await repo.updateMarket(
+              { id: body.id },
+              body
+            );
+            if (error) {
+              responseHandler.failure(
+                res,
+                {
+                  message: "error updating market",
+                  response: {
+                    errors: error,
+                  },
+                },
+                httpStatus.Ok
+              );
+            }
+            return responseHandler.success(
+              res,
+              {
+                message: "market updated",
+                response: {
+                  market: market[0],
+                },
+              },
+              httpStatus.Ok
+            );
+          })
+          .catch((err) => {
+            return responseHandler.failure(
+              res,
+              {
+                message: "error occurred",
+                response: {
+                  errors: err,
+                },
+              },
+              httpStatus.UNPROCESSABLE_ENTITY
+            );
+          });
+      }
+      const { error, market } = await repo.updateMarket({ id: body.id }, body);
+      if (error) {
+        responseHandler.failure(
+          res,
+          {
+            message: "error updating market",
+            response: {
+              errors: error,
+            },
+          },
+          httpStatus.Ok
+        );
+      }
 
-          return responseHandler.success(
-            res,
-            {
-              message: "market updated",
-              response: {
-                errors: error,
-                market: market[0],
-              },
-            },
-            httpStatus.Ok
-          );
-        })
-        .catch((err) => {
-          return responseHandler.failure(
-            res,
-            {
-              message: "error occurred",
-              response: {
-                errors: err,
-              },
-            },
-            httpStatus.UNPROCESSABLE_ENTITY
-          );
-        });
+      return responseHandler.success(
+        res,
+        {
+          message: "market updated",
+          response: {
+            market: market[0],
+          },
+        },
+        httpStatus.Ok
+      );
     } catch (error) {
       next(error);
     }

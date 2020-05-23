@@ -24,6 +24,10 @@ const Card = ({ cardData, onClick, showEditDeleteButton = true }) => {
                   <b>Name:</b>
                   {data.name}
                 </p>
+                <p className="card-title text-muted">
+                  <b>Category:</b>
+                  {data.category}
+                </p>
                 <p className="card-text text-muted">
                   <b>Description:</b>
                   {data.description.slice(0, 100)}

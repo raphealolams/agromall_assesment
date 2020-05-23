@@ -30,6 +30,8 @@ const initialState = {
   showLoginButton: true,
   logUserOut: false,
   isMarketAdded: false,
+  isMarketUpdateError: false,
+  showSpinner: false,
 };
 
 const store = createContext(initialState);
@@ -89,6 +91,30 @@ const StateProvider = ({ component }) => {
     </Provider>
   );
 
+  function dispatchSpinner() {
+    dispatch({
+      type: "change",
+      payload: true,
+      field: "showSpinner",
+    });
+  }
+
+  function noSpinnerDispatch() {
+    dispatch({
+      type: "change",
+      payload: false,
+      field: "showSpinner",
+    });
+  }
+
+  function setDispatchValue(value, field) {
+    dispatch({
+      type: "change",
+      payload: value,
+      field: field,
+    });
+  }
+
   function onChangeInput(e) {
     let field = e.target.name;
     let value = e.target.value;
@@ -122,7 +148,7 @@ const StateProvider = ({ component }) => {
 
   async function handleLogin() {
     const { email, password } = state;
-
+    dispatchSpinner();
     const [error, response] = await to(
       axios.post(`${process.env.REACT_APP_API_URL}/users/login`, {
         email,
@@ -130,45 +156,22 @@ const StateProvider = ({ component }) => {
       })
     );
 
+    noSpinnerDispatch();
     if (error) {
-      dispatch({
-        type: "change",
-        payload: error.response.data,
-        field: "authErrors",
-      });
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "authError",
-      });
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "authError",
-      });
-      dispatch({
-        type: "change",
-        payload: {},
-        field: "authErrors",
-      });
+      setDispatchValue(true, "authError");
+      setDispatchValue(error.response.data, "authErrors");
+      setDispatchValue(false, "authError");
+      setDispatchValue({}, "authErrors");
     } else {
       localStorage.setItem("token", response.data.data.bearerToken);
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "authSuccessful",
-      });
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "authSuccessful",
-      });
+      setDispatchValue(true, "authSuccessful");
+      setDispatchValue(false, "authSuccessful");
     }
   }
 
   async function handleSignup() {
     const { email, password, firstName, lastName, confirmPassword } = state;
-
+    noSpinnerDispatch();
     const [error, response] = await to(
       axios.post(`${process.env.REACT_APP_API_URL}/users/register`, {
         email,
@@ -179,39 +182,17 @@ const StateProvider = ({ component }) => {
       })
     );
 
+    noSpinnerDispatch();
     if (error) {
-      dispatch({
-        type: "change",
-        payload: error.response.data,
-        field: "authErrors",
-      });
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "authError",
-      });
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "authError",
-      });
-      dispatch({
-        type: "change",
-        payload: {},
-        field: "authErrors",
-      });
+      setDispatchValue(error.response.data, "authErrors");
+      setDispatchValue(true, "authError");
+      setDispatchValue({}, "authErrors");
+      setDispatchValue(false, "authError");
+      return;
     } else {
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "authSuccessful",
-      });
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "authSuccessful",
-      });
       localStorage.setItem("token", response.data.data.bearerToken);
+      setDispatchValue(true, "authSuccessful");
+      setDispatchValue(false, "authSuccessful");
     }
   }
 
@@ -228,11 +209,7 @@ const StateProvider = ({ component }) => {
 
     if (error) dispatch({ type: "hide loader" });
     else {
-      dispatch({
-        type: "change",
-        payload: response.data.data.user,
-        field: "user",
-      });
+      setDispatchValue(response.data.data.user, "user");
     }
   }
 
@@ -248,11 +225,7 @@ const StateProvider = ({ component }) => {
 
     if (error) dispatch({ type: "hide loader" });
     else {
-      dispatch({
-        type: "change",
-        payload: response.data.data.markets,
-        field: "markets",
-      });
+      setDispatchValue(response.data.data.markets, "markets");
     }
   }
 
@@ -266,27 +239,16 @@ const StateProvider = ({ component }) => {
       })
     );
     if (error) {
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "isMarketDeletedError",
-      });
-      dispatch({
-        type: "clear error",
-        payload: false,
-        field: "isMarketDeletedError",
-      });
+      setDispatchValue(true, "isMarketDeletedError");
+      setDispatchValue(false, "isMarketDeletedError");
     } else {
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
+      setDispatchValue(response.data.data.market, "market");
     }
   }
 
   async function addMarket() {
     const bearerToken = localStorage.getItem("token");
+    dispatchSpinner();
     const { name, description, category, address, files } = state;
 
     const data = new FormData();
@@ -311,152 +273,59 @@ const StateProvider = ({ component }) => {
         },
       })
     );
+
+    noSpinnerDispatch();
     if (error) {
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "isMarketAddedError",
-      });
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "isMarketAddedError",
-      });
+      setDispatchValue(true, "isMarketAddedError");
+      setDispatchValue(false, "isMarketAddedError");
     } else {
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "isMarketAdded",
-      });
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "isMarketAdded",
-      });
-      dispatch({
-        type: "change",
-        payload: "",
-        field: "name",
-      });
-      dispatch({
-        type: "change",
-        payload: "",
-        field: "category",
-      });
-      dispatch({
-        type: "change",
-        payload: "",
-        field: "description",
-      });
-      dispatch({
-        type: "change",
-        payload: "",
-        field: "address",
-      });
-      dispatch({
-        type: "change",
-        payload: [],
-        field: "marketPictures",
-      });
+      setDispatchValue(true, "isMarketAdded");
+      setDispatchValue(false, "isMarketAdded");
+      setDispatchValue("", "name");
+      setDispatchValue("", "category");
+      setDispatchValue("", "description");
+      setDispatchValue("", "address");
+      setDispatchValue([], "marketPictures");
     }
   }
 
   async function updateMarket() {
+    dispatchSpinner();
     const bearerToken = localStorage.getItem("token");
-    const {
-      name,
-      description,
-      category,
-      address,
-      market,
-      file,
-      marketPictures,
-    } = state;
-    const payload = {
-      name,
-      description,
-      category,
-      address,
-      ...market,
-    };
+    const { name, description, category, address, files, market } = state;
 
-    const blobFile = new Blob([file]); // kind of works and choses stream as content type of file (not request)
     const data = new FormData();
-    data.append("pictures", blobFile);
-    data.append("id", payload.id);
-    data.append("name", payload.name);
-    data.append("description", payload.description);
-    data.append("category", payload.category);
-    data.append("address", payload.address);
-    data.append("images", payload.pictures);
-    data.append("isNew", file.length > 0 ? "true" : "false");
-    console.log(data, file);
+    for (var x = 0; x < files.length; x++) {
+      data.append("pictures", files[x]);
+    }
+    data.append("id", market.id);
+    data.append("name", name.length > 0 ? name : market.name);
+    data.append(
+      "description",
+      description.length > 0 ? description : market.description
+    );
+    data.append("category", category.length > 0 ? category : market.category);
+    data.append("address", address.length > 0 ? address : market.address);
 
     const [error, response] = await to(
-      axios.patch(
-        `${process.env.REACT_APP_API_URL}/markets`,
-        {
-          name,
-          category,
-          description,
-          address,
-          marketPictures,
+      axios({
+        url: `${process.env.REACT_APP_API_URL}/markets`,
+        method: "PATCH",
+        data: data,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: bearerToken,
         },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: bearerToken,
-          },
-        }
-      )
+      })
     );
+    noSpinnerDispatch();
     if (error) {
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "isMarketDeletedError",
-      });
-      dispatch({
-        type: "clear error",
-        payload: false,
-        field: "isMarketDeletedError",
-      });
+      setDispatchValue(true, "isMarketUpdateError");
+      setDispatchValue(false, "isMarketUpdateError");
     } else {
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
-      dispatch({
-        type: "change",
-        payload: response.data.data.market,
-        field: "market",
-      });
+      setDispatchValue(response.data.data.market, "market");
+      setDispatchValue(true, "isMarketAdded");
+      setDispatchValue(false, "isMarketAdded");
     }
   }
 
@@ -477,66 +346,29 @@ const StateProvider = ({ component }) => {
     );
 
     if (error) {
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "isMarketDeletedError",
-      });
-      dispatch({
-        type: "clear error",
-        payload: false,
-        field: "isMarketDeletedError",
-      });
+      setDispatchValue(true, "isMarketDeletedError");
+      setDispatchValue(false, "isMarketDeletedError");
     } else {
       const newMarkets = markets.filter(
         (market) => market.id !== marketToDelete
       );
 
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "isMarketDeleted",
-      });
+      setDispatchValue(true, "isMarketDeleted");
+      setDispatchValue(false, "isMarketDeleted");
 
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "isMarketDeleted",
-      });
-
-      dispatch({
-        type: "change",
-        payload: {},
-        field: "market",
-      });
-
-      dispatch({
-        type: "change",
-        payload: newMarkets,
-        field: "markets",
-      });
+      setDispatchValue({}, "market");
+      setDispatchValue(newMarkets, "markets");
     }
   }
 
   function checkIsAdmin() {
     const bearerToken = localStorage.getItem("token");
     if (!bearerToken) {
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "showEditDeleteButton",
-      });
+      setDispatchValue(false, "showEditDeleteButton");
+      setDispatchValue(true, "showLoginButton");
     } else {
-      dispatch({
-        type: "change",
-        payload: true,
-        field: "showEditDeleteButton",
-      });
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "showLoginButton",
-      });
+      setDispatchValue(true, "showEditDeleteButton");
+      setDispatchValue(false, "showLoginButton");
     }
   }
 
@@ -546,25 +378,20 @@ const StateProvider = ({ component }) => {
   }
 
   async function searchMarket({ latitude, longitude }) {
+    dispatchSpinner();
     const { name, category } = state;
     const [error, response] = await to(
       axios.get(
         `${process.env.REACT_APP_API_URL}/search?name=${name}&category=${category}&latitude=${latitude}&longitude=${longitude}`
       )
     );
-
+    noSpinnerDispatch();
     if (error || !response) {
-      dispatch({
-        type: "change",
-        payload: false,
-        field: "isMarketFound",
-      });
+      setDispatchValue(false, "isMarketFound");
     } else {
-      dispatch({
-        type: "change",
-        payload: response.data.data.markets,
-        field: "markets",
-      });
+      setDispatchValue(response.data.data.markets, "markets");
+      setDispatchValue("", "name");
+      setDispatchValue("", "category");
     }
   }
 };
