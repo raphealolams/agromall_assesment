@@ -15,7 +15,7 @@ services:
 
   # Backend API
   agromall_api:
-    container_name: backend
+    container_name: agromall_backend
     build: ./
     command: >
       bash -c "npm run setup
