@@ -46,6 +46,6 @@ services:
     links:
       - postgres
     ports:
-      - "3010:3010"
+      - "3000:3000"
     volumes:
       - ./:/usr/src/agromall
