@@ -11,7 +11,7 @@
     "migration": "npx sequelize db:migrate",
     "seed": "npx sequelize db:seed:all",
     "start": "node index.js",
-    "setup": "npm install && npx sequelize db:create && npx sequelize db:migrate && npx sequelize db:seed:all",
+    "setup": "npm install && npx sequelize db:migrate && npx sequelize db:seed:all",
     "test": "mocha test/**/*.js",
     "test-watch": "mocha **/**/*.test.js"
   },
