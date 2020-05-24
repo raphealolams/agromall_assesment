@@ -1,0 +1,51 @@
+version: "3.6"
+
+services:
+  # Postgres
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_HOST=${DATABASE_HOST}
+    ports:
+      - "5432:5432"
+
+  # Backend API
+  audio_transcribe_api:
+    container_name: backend
+    build: ./
+    command: >
+      bash -c "npm run setup
+      && npm start"
+    working_dir: /usr/src/agromall
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_DIALECT=${DATABASE_DIALECT}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_LOGGING=${DATABASE_LOGGING}
+      - DATABASE_MIN=${DATABASE_MIN}
+      - DATABASE_MAX=${DATABASE_MAX}
+      - DATABASE_IDLE=${DATABASE_IDLE}
+      - DATABASE_ACQUIRE=${DATABASE_ACQUIRE}
+      - DATABASE_TIMESTAMPS=${DATABASE_TIMESTAMPS}
+      - JWTSECRET=${JWTSECRET}
+      - JWTEXPIRESIN=${JWTEXPIRESIN}
+      - CLOUDINARY_NAME=${CLOUDINARY_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - CLOUDINARY_URL=${CLOUDINARY_URL}
+      - GOOGLE_URL={GOOGLE_URL}
+      - GOOGLE_KEY={GOOGLE_KEY}
+    links:
+      - postgres
+    ports:
+      - "3010:3010"
+    volumes:
+      - ./:/usr/src/agromall
