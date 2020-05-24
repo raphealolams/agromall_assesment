@@ -3,7 +3,7 @@ version: "3.6"
 services:
   # Postgres
   postgres:
-    container_name: postgres
+    container_name: postgres_db
     image: postgres
     environment:
       - POSTGRES_USER=${DATABASE_USER}
@@ -14,7 +14,7 @@ services:
       - "5432:5432"
 
   # Backend API
-  audio_transcribe_api:
+  agromall_api:
     container_name: backend
     build: ./
     command: >
